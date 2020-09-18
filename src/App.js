@@ -1,21 +1,11 @@
 import React, { Component } from "react";
+import Search from "./components/Search"
+import Table from "./components/Table"
+import Button from "./components/Button"
 // import logo from './logo.svg';
 import "./App.css";
 
 const BackgroundContext = React.createContext(null);
-
-// =========================================== //
-//                COMPONENT STYLE             //
-const largeColumn = {
-  width: '40%',
-}
-const mediumColumn = {
-  width: '30%'
-}
-const smallColumn = {
-  width: '10%'
-}
-// =========================================== //
 
 
 // =====  HACKERNEWS URL CONSTATNS AND DEFAULT PARAMETERs ====== //
@@ -25,11 +15,8 @@ const PARAM_SEARCH = 'query=';
 const PARAM_PAGE = 'page='
 const PARAM_HPP = 'hitsPerPage=';
 
-const DEFAULT_QUERY = 'redux';
+const DEFAULT_QUERY = 'technology';
 const DEFAULT_HPP = 100;
-
-// const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}${PARAM_PAGE}`;
-
 
 // isSearched() is used to filter the list with a (searchTerm) === NO MORE USED
 // const isSearched = searchTerm => item =>
@@ -38,24 +25,18 @@ const DEFAULT_HPP = 100;
 class App extends Component {
   constructor(props) {
     super(props);
-    // initializing state in the constructor
+
     this.state = {
       results: null,
       searchKey: '',  // searchKey is non-fluctant and helps in implemnenting a client-cache
       searchTerm: DEFAULT_QUERY,
     };
+
     console.log("STATE",this.state);
-    // binding class component methods in the constructor
-    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
-    this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-    this.setSearchTopStories = this.setSearchTopStories.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
-    this.onSearchChange = this.onSearchChange.bind(this);
-    this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
 
   // HELPER FUNCTION TO SEARCH FROM [HACKER-NEWS API]
-  fetchSearchTopStories(searchTerm, page =0) {
+  fetchSearchTopStories = (searchTerm, page =0) => {
     console.log("... calling HackerNews API");
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
     .then(response => response.json())
@@ -64,7 +45,7 @@ class App extends Component {
   }
 
   // SETS SEARCH RESULT FROM HACKERNEWS IN THE STATE
-  setSearchTopStories(result) {
+  setSearchTopStories = (result)  =>{
     const { hits, page } = result;
     const { searchKey, results } = this.state;
     const oldHits = results && results[searchKey]
@@ -85,12 +66,12 @@ class App extends Component {
   }
 
   // check if result is cached before making  API call
-  needsToSearchTopStories(searchTerm) {
+  needsToSearchTopStories=(searchTerm) =>{
     return !this.state.results[searchTerm];
   }
 
   // handler for 'DISMISS' button in [TABLE-COMPONENT]
-  onDismiss(id) {
+  onDismiss=(id) =>{
     const { searchKey, results } = this.state;
     const { hits, page } = results[searchKey];
     const isNotId = item => item.objectID !== id;
@@ -105,13 +86,13 @@ class App extends Component {
   }
 
   // changes the 'searchTerm' in the state, each time we type in the input field
-  onSearchChange(event) {
+  onSearchChange=(event) =>{
     // 'event' is REACTs systhetic event
     this.setState({ searchTerm: event.target.value }); // update state to the input text
   }
 
   // called when 'SEARCH' button is clicked
-  onSearchSubmit(event) {
+  onSearchSubmit=(event) =>{
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm })
     if(this.needsToSearchTopStories(searchTerm)) {
@@ -155,9 +136,8 @@ class App extends Component {
           value={searchTerm} 
           onChange={this.onSearchChange}
           onSubmit={this.onSearchSubmit}
-          >
-            Search
-          </Search>
+          label="Search"
+          />
         </div>
 
         <Table
@@ -178,53 +158,7 @@ class App extends Component {
   }
 }
 
-// SEARCH COMPONENT WITH <input />
-const Search = ({ value, onChange, children, onSubmit }) =>
-  <form onSubmit={onSubmit}>
-    {`${children}:`}
-    <input type="text" value={value} onChange={onChange} />
-    <button>
-      {children}
-    </button>
-  </form>
-
-// TABLE COMPONENT
-const Table = ({ list, onDismiss }) =>
-  <div className="table">
-    {list.map(item => (
-      <div key={item.objectID} className="table-row">
-        <span style={ largeColumn }>
-          <a href={item.url} target={"_blank"}>{item.title}</a>
-        </span>
-        <span style={ mediumColumn }>
-          {item.author}
-        </span>
-        <span style={ smallColumn }>
-          {item.num_comments}
-        </span>
-        <span style={{ width: '10%' }}>
-          {item.points}
-        </span>
-        <span style={{ width: '10%'}}>
-          <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
-            Dismiss
-          </Button>
-        </span>
-      </div>
-    ))}
-  </div>
-
-// BUTTON COMPONENT
-const Button = ({ onClick, className = "", children }) =>
-  <button type="button" className={className} onClick={onClick}>
-    {children}
-  </button>
-
-export const firstname = " emmanuel";
-export const lastname = "ikwuoma";
-// const job = "react developer";
-
-
+export default App;
 
 // REACT v16 ERROR BOUNDARY COMPONENT
 // class ErrorBoundary extends Component {
@@ -240,6 +174,3 @@ export const lastname = "ikwuoma";
 
 //   }
 // }
-
-// console.log("My version of react is " + React.version);
-export default App;
