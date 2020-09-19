@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 ## [see the live demo](https://nuel-ikwuoma.github.io/hacker-news-clone/)
+=======
+>>>>>>> 296a23e6390bcc3d5015427d0c9bedaeeddadd67
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
